@@ -22,7 +22,7 @@ app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#heroku = Heroku(app)
+heroku = Heroku(app)
 db = SQLAlchemy(app)
 @app.route('/home')
 @app.route("/")

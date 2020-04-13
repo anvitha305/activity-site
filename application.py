@@ -22,7 +22,7 @@ app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-heroku = Heroku(app)
+#heroku = Heroku(app)
 db = SQLAlchemy(app)
 @app.route('/home')
 @app.route("/")
@@ -86,5 +86,33 @@ def reset():
         mail.password_hash = password_hash
         db.session.commit()
    return render_template("reset_password.html", email=session["email"])
+def password_set(email):
+    password = "" + str(randint(0,9)) + str(randint(0,9)) + str(randint(0,9)) + str(randint(0,9)) + str(randint(0,9)) + str(randint(0,9))
+    msg = MIMEMultipart()
+    msg['From'] = "anvitha2k20@gmail.com"
+    msg['To'] = email
+    msg['Subject'] = 'Hey guess what? You\'ve got a new best friend in ABctivities.'
+    message = "So. You tried to make an account with us, the ever-humble ABctivities group. Thanks and congratulations. Here's your six-digit code you can enter into login for a password reset: "+ password
+    msg.attach(MIMEText(message))
+    smtp_server = SMTP('smtp.gmail.com','465')
+    em = os.environ.get("email")
+    pw  = os.environ.get("password")
+    smtp_server.login(em, pw)
+    smtp_server.sendmail(em, email, msg.as_string())
+    smtp_server.close()
+    return password
+class Dataentry(db.Model):
+    __tablename__ = "users"
+    first_name = db.Column(db.String)
+    last_name = db.Column(db.String)
+    email = db.Column(db.String, primary_key=True, unique=True)
+    password_hash = db.Column(db.String)
+    club_list = db.Column(postgresql.ARRAY(db.String), nullable=True)
+    def __init__ (self, first_name, last_name, email, password_hash, club_list):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password_hash = password_hash
+        self.club_list = club_list
 if __name__ == "__main__":
     app.run(debug=True)
